@@ -50,7 +50,7 @@ def main():
         raise ValueError("Please set the TOKEN environment variable.")
 
     authorized_channels = barrens_chat.TEXT_ALL
-    authorized_channels -= barrens_chat.TEXT_WEBCOMIC
+    authorized_channels.remoace(barrens_chat.TEXT_WEBCOMIC)
 
     crossroads_bot = CrossRoadsBot(
         channels=authorized_channels
