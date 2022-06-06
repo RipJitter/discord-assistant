@@ -16,7 +16,7 @@ MONITORED_CHANNELS.remove(barrens_chat.TEXT_WEBCOMIC)
 
 @client.event
 async def on_ready():
-    print(f"{client.user} is online!")
+    print(f"{client.user} is online! delete a message in discord! ")
 
 
 @client.event

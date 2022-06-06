@@ -61,7 +61,7 @@ async def on_message(message):
 def respond_to_bot(msg):
     content = None
     if 'the evidence...' in msg:
-        content = "Grabbing the shovel!"
+        content = "Let's hope you do a better job than last time..."
 
     return content
 
