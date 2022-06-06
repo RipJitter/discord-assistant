@@ -25,7 +25,8 @@ async def on_message_delete(message):
     if message.channel.id not in MONITORED_CHANNELS:
         return
 
-    await message.channel.send(f"Hidden like Mankrik's wife...", delete_after=3)
+    await message.channel.send(f"Hidden like Mankrik's wife...",
+                               delete_after=7)
 
 
 @client.event
@@ -35,7 +36,7 @@ async def on_message(message):
 
     if message.channel.id not in MONITORED_CHANNELS:
         return
-
+#Extened times on bot messages by 2 seconds and ran tests.
     msg = message.content.casefold()  # Case insensitive
     if '!help' in msg:
         await message.reply("I can't help you with that", delete_after=5)
