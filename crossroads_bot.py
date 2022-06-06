@@ -25,9 +25,7 @@ async def on_message_delete(message):
     if message.channel.id not in MONITORED_CHANNELS:
         return
 
-    if not message.author.bot:
-        await message.channel.send(f"Hidden like Mankrik's wife...",
-                                   delete_after=3)
+    await message.channel.send(f"Hidden like Mankrik's wife...", delete_after=3)
 
 
 @client.event
