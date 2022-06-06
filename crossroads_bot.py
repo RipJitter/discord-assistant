@@ -38,6 +38,7 @@ async def on_message(message):
         return
 #Extened times on bot messages by 2 seconds and ran tests.
     msg = message.content.casefold()  # Case insensitive
+
     if '!help' in msg:
         await message.reply("I can't help you with that", delete_after=5)
 
