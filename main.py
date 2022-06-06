@@ -1,5 +1,4 @@
 # Permissions: 292058168384
-
 import discord
 import os
 
@@ -41,8 +40,9 @@ async def on_message_delete(message):
         return
 
     if message.channel.id in MONITORED_CHANNELS:
-        await message.channel.send(f"Good {message.author.mention}, hide the "
-                                   "evidence...", delete_after=3)
+        if not message.author.bot:
+            await message.channel.send(f"Good {message.author.mention}, hide "
+                                       "the evidence...", delete_after=3)
 
 
 @client.event
@@ -52,6 +52,11 @@ async def on_message(message):
 
     if message.channel.id == WEBCOMIC_CHANNEL_ID:
         await webcomic_cmd(message)
+
+    if message.author.bot:
+        if 'hide the evidence' in message.content.casefold():
+            await message.reply("They must never know our secrets!",
+                                delete_after=2)
 
 
 async def webcomic_cmd(message):
