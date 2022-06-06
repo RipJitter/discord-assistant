@@ -20,7 +20,7 @@ class DiscordBot(discord.Client):
     methods like this "x = super().overwritten_class_method(args)"
     """
 
-    def __init__(self, channels=None):
+    def __init__(self, user_id=0, name="DiscordBot", channels=None):
         """
         Initializes the Bot class.
         :param channels: List of channels to authorize the bot to
@@ -28,26 +28,12 @@ class DiscordBot(discord.Client):
         """
 
         super(DiscordBot, self).__init__()
+        self.id = user_id
+        self.name = name
         if channels is None:
             channels = []
         self.authorized_channels = channels
         self.channels = {}  # id: Channel
-
-    def _ignored(self, message):
-        """
-        Filters out messages that should be ignored to prevent
-        looping of bots talking to themselves or each other.
-        :param message: Discord Message object
-        :return: Boolean of whether or not the message should be
-        ignored
-        """
-
-        ignored = False
-        if message.author == self.user:
-            ignored = True
-        elif message.channel.id not in self.authorized_channels:
-            ignored = True
-        return ignored
 
     @staticmethod
     async def _find_deleter(message):
@@ -74,6 +60,49 @@ class DiscordBot(discord.Client):
             logging.debug(f"{deleter} deleted their own message")
 
         return deleter
+
+    @staticmethod
+    def _is_mentioned(name=None, msg=None, user_id=None, raw_mentions=None):
+        """
+        Checks to see if a Discord user is mentioned in a message.
+        :param name: String name of user
+        :param msg: String message content to search in
+        :param user_id: Discord User ID number of the user
+        :param raw_mentions: List of Discord User IDs mentioned
+        :return: Boolean of whether the user was mentioned or not
+        """
+
+        is_mentioned = False
+
+        _name = name is not None
+        _msg = msg is not None
+        if all((_name, _msg)):
+            if name in msg:
+                is_mentioned = True
+
+        _user_id = user_id is not None
+        _raw_mentions = raw_mentions is not None
+        if all((_user_id, _raw_mentions)):
+            if user_id in raw_mentions:
+                is_mentioned = True
+
+        return is_mentioned
+
+    def _ignored(self, message):
+        """
+        Filters out messages that should be ignored to prevent
+        looping of bots talking to themselves or each other.
+        :param message: Discord Message object
+        :return: Boolean of whether or not the message should be
+        ignored
+        """
+
+        ignored = False
+        if message.author == self.user:
+            ignored = True
+        elif message.channel.id not in self.authorized_channels:
+            ignored = True
+        return ignored
 
     def _get_channels(self):
         """
@@ -111,17 +140,24 @@ class DiscordBot(discord.Client):
         the Bot should respond or not.
         """
 
+        ignored = False
         if self._ignored(message):
-            return
+            ignored = True
 
         msg = "Message deleted. Checking audit log to see if I should respond"
         logging.debug(msg)
         should_respond = False
 
-        deleter = await self._find_deleter(message)
+        if not ignored:
+            try:
+                deleter = await self._find_deleter(message)
+            except discord.errors.Forbidden:
+                deleter = None
 
-        if not deleter.bot:
-            should_respond = True
+            if deleter is not None and not deleter.bot:
+                should_respond = True
+        else:
+            deleter = None
 
         return message, deleter, should_respond
 
@@ -131,17 +167,18 @@ class DiscordBot(discord.Client):
         This method is called when a message was posted to one
         of the channels in the bot's authorized_channels property.
         :param message: Discord Message object that was sent
-        :return: None by default, should be overwritten
+        :return: Discord Message object
         """
 
         if self._ignored(message):
             return
 
         if message.author.bot:
-            response = await self.respond_to_bot(message)
+            await self.respond_to_bot(message)
         else:
-            response = await self.respond_to_human(message)
-        return response
+            await self.respond_to_human(message)
+
+        return message
 
     async def respond_to_bot(self, message):
         """
@@ -152,7 +189,7 @@ class DiscordBot(discord.Client):
         :return: None by default, should be overwritten
         """
 
-        pass  # Overwrite me!
+        return  # Overwrite me!
 
     async def respond_to_human(self, message):
         """
@@ -163,7 +200,7 @@ class DiscordBot(discord.Client):
         :return: None by default, should be overwritten
         """
 
-        pass  # Overwrite me!
+        return  # Overwrite me!
 
 
 if __name__ == '__main__':
@@ -178,5 +215,5 @@ if __name__ == '__main__':
 
     authorized_channels = []  # Replace me
 
-    bot = DiscordBot(authorized_channels)
+    bot = DiscordBot(channels=authorized_channels)
     bot.run(TOKEN)

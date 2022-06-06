@@ -1,70 +1,62 @@
+import logging
 import os
+import time
 
-import discord
-
-from constants import barrens_chat
-
-
-client = discord.Client()
-
-MONITORED_CHANNELS = [
-    barrens_chat.TEXT_GENERAL,
-]
+from Assistant import DiscordBot
+from constants import users
+from constants.guilds import barrens_chat
 
 
-@client.event
-async def on_ready():
-    print(f"{client.user} is online!")
+class CrossRoadsBot(DiscordBot):
+    def __init__(self, user_id=users.CROSSROADS_BOT, name="CrossRoads Bot",
+                 channels=None):
+        super(CrossRoadsBot, self).__init__(user_id, name, channels)
 
+    async def on_message_delete(self, message):
+        message, deleter, respond = await super().on_message_delete(message)
+        if respond:
+            resp = "Hidden like Mankrik's wife..."
+            await message.channel.send(resp, delete_after=7)
 
-@client.event
-async def on_message_delete(message):
-    if message.author == client.user or message.author.bot:
-        return
+    async def respond_to_bot(self, message):
+        content = None
 
-    if message.channel.id not in MONITORED_CHANNELS:
-        return
+        msg = message.content.casefold()
 
-    await message.channel.send(f"Hidden like Mankrik's wife...",
-                               delete_after=7)
+        if 'the evidence...' in msg:
+            content = "Let's hope you do a better job than last time..."
 
-
-@client.event
-async def on_message(message):
-    if message.author == client.user or message.author.bot:
-        return
-
-    if message.channel.id not in MONITORED_CHANNELS:
-        return
-#Extened times on bot messages by 2 seconds and ran tests.
-    msg = message.content.casefold()  # Case insensitive
-
-    if '!help' in msg:
-        await message.reply("I can't help you with that", delete_after=5)
-
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    if message.channel.id not in MONITORED_CHANNELS:
-        return
-
-    msg = message.content.casefold()
-
-    if message.author.bot:
-        content = respond_to_bot(msg)
         if content is not None:
-            await message.reply(content, delete_after=2)
+            await message.channel.trigger_typing()
+            time.sleep(2)
+            await message.reply(content, delete_after=5)
+
+    async def respond_to_human(self, message):
+        # Extended times on bot messages by 2 seconds and ran tests.
+        msg = message.content.casefold()  # Case insensitive
+
+        if '!help' in msg:
+            await message.reply("I can't help you with that", delete_after=5)
 
 
-def respond_to_bot(msg):
-    content = None
-    if 'the evidence...' in msg:
-        content = "Let's hope you do a better job than last time..."
+def main():
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='[%(levelname)s] %(message)s'
+    )
+    logging.getLogger('discord').setLevel(logging.WARNING)
 
-    return content
+    if (TOKEN := os.environ.get('TOKEN')) is None:
+        raise ValueError("Please set the TOKEN environment variable.")
+
+    authorized_channels = barrens_chat.TEXT_ALL
+    authorized_channels -= barrens_chat.TEXT_WEBCOMIC
+
+    crossroads_bot = CrossRoadsBot(
+        channels=authorized_channels
+    )
+    crossroads_bot.run(TOKEN)
+
 
 if __name__ == '__main__':
-    TOKEN = os.getenv('TOKEN')
-    client.run(TOKEN)
+    main()
