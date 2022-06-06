@@ -1,14 +1,16 @@
 # Permissions: 292058168384
+import os
+
 import discord
 
-from constants import *
+from constants import barrens_chat
 from bot_utils.webcomic import Darklegacy
 
 
 client = discord.Client()
 
 MONITORED_CHANNELS = [
-    WEBCOMIC_CHANNEL_ID
+    barrens_chat.TEXT_WEBCOMIC
 ]
 
 SUPPORTED = [
@@ -26,6 +28,12 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    if message.channel.id not in MONITORED_CHANNELS:
+        return
+
+    if message.author.bot:
+        return
+
     msg = message.content.casefold()
 
     if 'download' in msg and any(c.casefold() in msg for c in SUPPORTED):
@@ -34,7 +42,7 @@ async def on_message(message):
 
 
 async def webcomic_download(message, msg, _tmp):
-    channel = client.get_channel(WEBCOMIC_CHANNEL_ID)
+    channel = client.get_channel(barrens_chat.TEXT_WEBCOMIC)
     try:
         await channel.trigger_typing()
         if 'dark legacy' in msg:
@@ -55,4 +63,5 @@ async def webcomic_download(message, msg, _tmp):
 
 
 if __name__ == '__main__':
+    TOKEN = os.getenv('TOKEN')
     client.run(TOKEN)
