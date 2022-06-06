@@ -28,7 +28,7 @@ class CrossRoadsBot(DiscordBot):
             content = "Let's hope you do a better job than last time..."
 
         if content is not None:
-            await self._fake_type(message.channel, seconds=2)
+            await self._fake_type(message.channel)
             await message.reply(content, delete_after=5)
 
     async def respond_to_human(self, message):
