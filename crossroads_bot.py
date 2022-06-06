@@ -1,6 +1,5 @@
 import logging
 import os
-import time
 
 from Assistant import DiscordBot
 from constants import users
@@ -15,8 +14,10 @@ class CrossRoadsBot(DiscordBot):
     async def on_message_delete(self, message):
         message, deleter, respond = await super().on_message_delete(message)
         if respond:
+            channel = message.channel
+            await self._fake_type(channel)
             resp = "Hidden like Mankrik's wife..."
-            await message.channel.send(resp, delete_after=7)
+            await channel.send(resp, delete_after=7)
 
     async def respond_to_bot(self, message):
         content = None
@@ -27,8 +28,7 @@ class CrossRoadsBot(DiscordBot):
             content = "Let's hope you do a better job than last time..."
 
         if content is not None:
-            await message.channel.trigger_typing()
-            time.sleep(2)
+            await self._fake_type(message.channel, seconds=2)
             await message.reply(content, delete_after=5)
 
     async def respond_to_human(self, message):

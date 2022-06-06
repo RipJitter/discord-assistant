@@ -1,7 +1,6 @@
 import logging
 import os
 import re
-import time
 
 from Assistant import DiscordBot
 from constants import users
@@ -29,8 +28,10 @@ class Sabrina(DiscordBot):
     async def on_message_delete(self, message):
         message, deleter, respond = await super().on_message_delete(message)
         if respond:
+            channel = message.channel
+            await self._fake_type(channel)
             resp = f"Good {deleter.mention}, hide the evidence..."
-            await message.channel.send(resp, delete_after=3)
+            await channel.send(resp, delete_after=7)
 
     async def respond_to_bot(self, message):
         content = None
@@ -41,8 +42,7 @@ class Sabrina(DiscordBot):
         #     content = "They must never know our secrets!"
 
         if content is not None:
-            await message.channel.trigger_typing()
-            time.sleep(1)
+            await self._fake_type(message.channel)
             await message.reply(content, delete_after=5)
 
     async def respond_to_human(self, message):
@@ -53,6 +53,7 @@ class Sabrina(DiscordBot):
                 r'hi|hello|greetings|hiya|hey|hola'
             )
             if re.search(pattern, msg):
+                await self._fake_type(message.channel)
                 await message.reply(self.hello(message))
 
         if self._is_seth_mentioned(msg, message.raw_mentions):
@@ -60,6 +61,7 @@ class Sabrina(DiscordBot):
                 r'how\s+do\s+(?:i|you)'
             )
             if re.search(pattern, msg):
+                await self._fake_type(message.channel, seconds=2)
                 await message.reply(self.lmgt(msg))
 
     def hello(self, message):

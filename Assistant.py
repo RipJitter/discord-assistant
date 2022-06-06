@@ -8,6 +8,7 @@ the DiscordBot class within this module.
 from datetime import datetime, timedelta
 import logging
 import os
+import time
 
 import discord
 
@@ -34,6 +35,19 @@ class DiscordBot(discord.Client):
             channels = []
         self.authorized_channels = channels
         self.channels = {}  # id: Channel
+
+    @staticmethod
+    async def _fake_type(channel, seconds=1):
+        """
+        Sends a typing indicator for a specific number of seconds.
+        :param channel: Discord Channel object to send indicator to
+        :param seconds: Int number of seconds to wait for
+        :return: None
+        """
+
+        await channel.trigger_typing()
+        time.sleep(seconds)
+
 
     @staticmethod
     async def _find_deleter(message):
