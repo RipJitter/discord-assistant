@@ -37,6 +37,7 @@ async def on_message(message):
         return
 
     msg = message.content.casefold()  # Case insensitive
+
     if '!help' in msg:
         await message.reply("I can't help you with that", delete_after=5)
 
