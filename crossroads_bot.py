@@ -41,6 +41,28 @@ async def on_message(message):
     if '!help' in msg:
         await message.reply("I can't help you with that", delete_after=5)
 
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+
+    if message.channel.id not in MONITORED_CHANNELS:
+        return
+
+    msg = message.content.casefold()
+
+    if message.author.bot:
+        content = respond_to_bot(msg)
+        if content is not None:
+            await message.reply(content, delete_after=2)
+
+
+def respond_to_bot(msg):
+    content = None
+    if 'the evidence...' in msg:
+        content = "Grabbing the shovel!"
+
+    return content
 
 if __name__ == '__main__':
     TOKEN = os.getenv('TOKEN')
