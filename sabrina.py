@@ -26,10 +26,7 @@ class Sabrina(DiscordBot):
         return self._is_mentioned(name, msg, users.SETH, raw_mentions)
 
     def _num_members(self, channel_members, members_to_check):
-        count = 0
-        for member in members_to_check:
-            if member in channel_members:
-                count += 1
+        count = len([m for m in members_to_check if m in channel_members])
         return count
 
     async def on_ready(self):
@@ -60,7 +57,8 @@ class Sabrina(DiscordBot):
                     content = f"Here comes {member.mention} to steal MVP!"
                     await general.send(content, delete_after=10)
 
-            num = self._num_members(channel.members, users.ALL_REAL_USERS)
+            channel_members = channel.voice_states.keys()
+            num = self._num_members(channel_members, users.ALL_REAL_USERS)
             if num > 4:
                 await self.fake_type(general, 2)
                 content = "Holy shit, the gang's all here!"
