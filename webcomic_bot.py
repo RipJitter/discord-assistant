@@ -1,4 +1,6 @@
+# https://discordpy.readthedocs.io/en/stable/ext/commands/api.html
 # Permissions: 292058168384
+
 import logging
 import os
 

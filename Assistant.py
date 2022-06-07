@@ -2,6 +2,8 @@
 This file serves as an example of a Discord bot implementation via
 a class Object. You should not use this file directly, but subclass
 the DiscordBot class within this module.
+
+https://discordpy.readthedocs.io/en/stable/api.html
 """
 
 
