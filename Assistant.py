@@ -37,7 +37,7 @@ class DiscordBot(discord.Client):
         self.channels = {}  # id: Channel
 
     @staticmethod
-    async def _fake_type(channel, seconds=1):
+    async def fake_type(channel, seconds=2):
         """
         Sends a typing indicator for a specific number of seconds.
         :param channel: Discord Channel object to send indicator to
@@ -47,7 +47,6 @@ class DiscordBot(discord.Client):
 
         await channel.trigger_typing()
         time.sleep(seconds)
-
 
     @staticmethod
     async def _find_deleter(message):
@@ -70,8 +69,9 @@ class DiscordBot(discord.Client):
                 logging.debug(msg)
                 break
         else:
-            deleter = message.author
-            logging.debug(f"{deleter} deleted their own message")
+            deleter = message.author  # Or possibly by a bot
+            msg = f"{deleter} deleted their own message (or a bot did)"
+            logging.debug(msg)
 
         return deleter
 
@@ -91,7 +91,7 @@ class DiscordBot(discord.Client):
         _name = name is not None
         _msg = msg is not None
         if all((_name, _msg)):
-            if name in msg:
+            if name.casefold() in msg:
                 is_mentioned = True
 
         _user_id = user_id is not None
@@ -111,12 +111,12 @@ class DiscordBot(discord.Client):
         ignored
         """
 
-        ignored = False
+        ignore = False
         if message.author == self.user:
-            ignored = True
+            ignore = True
         elif message.channel.id not in self.authorized_channels:
-            ignored = True
-        return ignored
+            ignore = True
+        return ignore
 
     def _get_channels(self):
         """

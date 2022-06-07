@@ -15,7 +15,7 @@ class CrossRoadsBot(DiscordBot):
         message, deleter, respond = await super().on_message_delete(message)
         if respond:
             channel = message.channel
-            await self._fake_type(channel)
+            await self.fake_type(channel)
             resp = "Hidden like Mankrik's wife..."
             await channel.send(resp, delete_after=7)
 
@@ -24,12 +24,18 @@ class CrossRoadsBot(DiscordBot):
 
         msg = message.content.casefold()
 
-        if 'the evidence...' in msg:
+        if 'the evidence...' in msg:  # Sabrina when message deleted
             content = "Let's hope you do a better job than last time..."
+        elif 'the gang\'s all here' in msg:  # Sabrina > 4 people in Lounge
+            content = "Are you guys going to play Heroes of the Storm?"
+        elif 'Hey look, even ' in msg:  # Sabrina > 3 people in Chill Lounge
+            content = None  # TODO Replace me
 
         if content is not None:
-            await self._fake_type(message.channel)
-            await message.reply(content, delete_after=5)
+            await self.fake_type(message.channel)
+            await message.reply(content, delete_after=8)
+
+
 
     async def respond_to_human(self, message):
         # Extended times on bot messages by 2 seconds and ran tests.
