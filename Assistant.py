@@ -23,20 +23,32 @@ class DiscordBot(discord.Client):
     methods like this "x = super().overwritten_class_method(args)"
     """
 
-    def __init__(self, user_id=0, name="DiscordBot", channels=None):
+    def __init__(self, user_id=0, name="DiscordBot", channels=None,
+                 intents=None):
         """
         Initializes the Bot class.
         :param channels: List of channels to authorize the bot to
         operate within.
         """
 
-        super(DiscordBot, self).__init__()
+        super(DiscordBot, self).__init__(intents=intents)
         self.id = user_id
         self.name = name
         if channels is None:
             channels = []
         self.authorized_channels = channels
         self.channels = {}  # id: Channel
+
+    @staticmethod
+    def _fstr(message, template):
+        """
+        Renders a templated string.
+        :param message: Discord Message that we are responding to
+        :param template: String template to render
+        :return: Rendered string
+        """
+
+        return eval(f"""f'''{template}'''""")
 
     @staticmethod
     async def fake_type(channel, seconds=2):
@@ -142,7 +154,7 @@ class DiscordBot(discord.Client):
         """
 
         self.channels = self._get_channels()
-        logging.debug(f"{self.user} is online!")
+        logging.info(f"{self.user} is online!")
 
     async def on_message_delete(self, message):
         """
