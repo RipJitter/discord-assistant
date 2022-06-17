@@ -120,8 +120,8 @@ class Handler:
             content = content.split('?')[0]
 
         regex = re.compile(
-            r'((how\s+do\s+(?:i|you))|'
-            r'(why\s+does\s+my)'
+            r'((how\s+do\s+(?:i|you)|'
+            r'(why\s+does\s+my))'
             r'.*)', flags=re.IGNORECASE
         )
 
